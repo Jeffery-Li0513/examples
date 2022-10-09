@@ -50,11 +50,11 @@ PROGRAM mc_nvt_lj
 
   IMPLICIT NONE
 
-  ! Most important variables
-  REAL :: box         ! Box length
-  REAL :: dr_max      ! Maximum MC displacement
-  REAL :: temperature ! Specified temperature
-  REAL :: r_cut       ! Potential cutoff distance
+  ! Most important variables 声明一些最重要的变量
+  REAL :: box         ! Box length                                ! 晶胞的尺寸
+  REAL :: dr_max      ! Maximum MC displacement                   ! 蒙特卡洛模拟最大步数
+  REAL :: temperature ! Specified temperature                     ! 温度
+  REAL :: r_cut       ! Potential cutoff distance                 ! 势函数截断半径
 
   ! Composite interaction = pot & vir & ovr variables
   TYPE(potential_type) :: total, partial_old, partial_new
@@ -68,8 +68,9 @@ PROGRAM mc_nvt_lj
   CHARACTER(len=3), PARAMETER :: out_tag    = 'out'
   CHARACTER(len=3)            :: sav_tag    = 'sav' ! May be overwritten with block number
 
-  NAMELIST /nml/ nblock, nstep, temperature, r_cut, dr_max
+  NAMELIST /nml/ nblock, nstep, temperature, r_cut, dr_max                ! namelist将一组相关变量封装到一起
 
+! 向屏幕输出一些信息
   WRITE ( unit=output_unit, fmt='(a)' ) 'mc_nvt_lj'
   WRITE ( unit=output_unit, fmt='(a)' ) 'Monte Carlo, constant-NVT'
   WRITE ( unit=output_unit, fmt='(a)' ) 'Simulation uses cut (but not shifted) potential'
@@ -77,7 +78,7 @@ PROGRAM mc_nvt_lj
 
   CALL RANDOM_SEED () ! Initialize random number generator
 
-  ! Set sensible default run parameters for testing
+  ! Set sensible default run parameters for testing 默认参数
   nblock      = 10
   nstep       = 10000
   temperature = 1.0
@@ -87,14 +88,14 @@ PROGRAM mc_nvt_lj
   ! Read run parameters from namelist
   ! Comment out, or replace, this section if you don't like namelists
   READ ( unit=input_unit, nml=nml, iostat=ioerr )
-  IF ( ioerr /= 0 ) THEN
+  IF ( ioerr /= 0 ) THEN                ! =0表示读写正常
      WRITE ( unit=error_unit, fmt='(a,i15)') 'Error reading namelist nml from standard input', ioerr
      IF ( ioerr == iostat_eor ) WRITE ( unit=error_unit, fmt='(a)') 'End of record'
      IF ( ioerr == iostat_end ) WRITE ( unit=error_unit, fmt='(a)') 'End of file'
      STOP 'Error in mc_nvt_lj'
   END IF
 
-  ! Write out run parameters
+  ! Write out run parameters    输出运行参数的信息，即READ读入的namelist变量
   WRITE ( unit=output_unit, fmt='(a,t40,i15)'   ) 'Number of blocks',          nblock
   WRITE ( unit=output_unit, fmt='(a,t40,i15)'   ) 'Number of steps per block', nstep
   WRITE ( unit=output_unit, fmt='(a,t40,f15.6)' ) 'Temperature',               temperature
